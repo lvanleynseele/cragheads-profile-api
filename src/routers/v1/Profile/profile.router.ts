@@ -3,10 +3,7 @@ import { Profile } from '../../../Models/Profile/Profile';
 import bookmarkedRouter from './profile.bookmarked.router';
 import friendsRouter from './profile.friends.router';
 import profileService from '../../../services/v1/Profile/profile.service';
-import climbsRouter from './profile.climbs.router';
-import postsRouter from './profile.posts.router';
 import preferencesRouter from './profile.preferences.router';
-import gymClimbsRouter from './profile.gymClimbs.router';
 
 const profileRouter = express.Router();
 
@@ -14,10 +11,6 @@ profileRouter.use(express.json());
 
 profileRouter.use('/bookmarked', bookmarkedRouter);
 profileRouter.use('/friends', friendsRouter);
-
-profileRouter.use('/climbs', climbsRouter);
-profileRouter.use('/gym-climbs', gymClimbsRouter);
-profileRouter.use('/posts', postsRouter);
 
 profileRouter.use('/preferences', preferencesRouter);
 
