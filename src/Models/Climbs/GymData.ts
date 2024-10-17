@@ -1,20 +1,27 @@
 import mongoose, { ObjectId, Schema } from 'mongoose';
 import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
+import {
+  ClimbingTypes,
+  GymHoldTypes,
+  KeyMoveTypes,
+} from '../../constants/enums';
 
 export interface GymClimbData {
   _id: ObjectId;
   userId: ObjectId;
   climbId: ObjectId;
-  didBoulder: boolean;
-  hardestBoulderGrade?: number;
-  didLead: boolean;
-  hardestLeadGrade?: number;
-  didTopRope: boolean;
-  hardestTopRopeGrade?: number;
+  //route specific info
+  type: ClimbingTypes;
+  didSend: boolean;
+  numberOfAttempts: number;
+  difficulty: number;
+  percievedDifficulty?: number;
+  keyHolds?: GymHoldTypes[];
+  keyMoves?: KeyMoveTypes[];
+  //content
+  beta?: string; //not a route beta, maybe should just be notes
+  images?: string[];
   notes?: string;
-  startTime: string;
-  endTime: string;
-  date: Date;
 }
 
 export const GymClimbDataSchema = new Schema<GymClimbData>(
@@ -32,48 +39,52 @@ export const GymClimbDataSchema = new Schema<GymClimbData>(
       index: true,
       required: true,
     },
-    didBoulder: {
-      type: Boolean,
-      required: true,
-      index: true,
-    },
-    hardestBoulderGrade: {
-      type: Number,
-      required: false,
-      default: 0,
-      index: true,
-    },
-    didLead: {
-      type: Boolean,
-      required: true,
-      index: true,
-    },
-    hardestLeadGrade: {
-      type: Number,
-      required: false,
-      default: 0,
-      index: true,
-    },
-    didTopRope: {
-      type: Boolean,
-      required: true,
-      index: true,
-    },
-    hardestTopRopeGrade: {
-      type: Number,
-      required: false,
-      default: 0,
-      index: true,
-    },
-    startTime: {
+    type: {
       type: String,
+      enum: Object.values(ClimbingTypes),
       required: true,
     },
-    endTime: {
+    didSend: {
+      type: Boolean,
+      required: true,
+    },
+    numberOfAttempts: {
+      type: Number,
+      required: true,
+    },
+    difficulty: {
+      type: Number,
+      required: true,
+    },
+    percievedDifficulty: {
+      type: Number,
+      required: false,
+      default: null,
+    },
+    keyHolds: {
+      type: [String],
+      enum: Object.values(GymHoldTypes),
+      required: false,
+      default: [],
+    },
+    keyMoves: {
+      type: [String],
+      enum: Object.values(KeyMoveTypes),
+      required: false,
+      default: [],
+    },
+    beta: {
       type: String,
-      required: true,
+      required: false,
     },
-    date: { type: Date, default: Date.now, index: true, required: false },
+    images: {
+      type: [String],
+      required: false,
+    },
+    notes: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,

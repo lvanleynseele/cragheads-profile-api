@@ -1,23 +1,24 @@
 import { ObjectId } from 'mongodb';
 import { collections } from '../../utility/database.service';
 import areaService from '../Area/area.service';
-import { ClimbingRoute } from '../../../Models/Routes/Route';
+import Routes, { Route } from '../../../Models/Routes/Route';
+import e from 'cors';
+import logger from '../../../utils/logger';
 
 const getRouteById = async (id: string | ObjectId) => {
-  return (await collections.routes.findOne({
-    _id: new ObjectId(id),
-  })) as unknown as ClimbingRoute;
+  return await Routes.findById(id);
 };
 
 const getRoutesByArea = async (areaId: string | ObjectId) => {
   const area = await areaService.findById(areaId);
 
-  const routes: ClimbingRoute[] = [];
+  const routes: Route[] = [];
   if (area.routeIds) {
     await Promise.all(
       area.routeIds.map(async routeId => {
         const route = await getRouteById(routeId);
-        routes.push(route);
+        if (route) routes.push(route);
+        else logger.error({ error: 'Route not found', routeId: routeId });
       }),
     );
   }

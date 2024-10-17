@@ -4,7 +4,8 @@ import { ClimbingArea } from '../../../Models/Area/Area';
 import areaService from '../Area/area.service';
 import routeService from '../Routes/routes.service';
 import profileService from './profile.service';
-import { ClimbingRoute } from '../../../Models/Routes/Route';
+import { Route } from '../../../Models/Routes/Route';
+import logger from '../../../utils/logger';
 
 const getAreasByProfile = async (profileId: string | ObjectId) => {
   const profile = await profileService.findProfileById(profileId);
@@ -28,13 +29,17 @@ const getRoutesByProfile = async (profileId: string | ObjectId) => {
   const profile = await profileService.findProfileById(profileId);
 
   if (profile && profile.myRouteIds) {
-    const bookmarkedRoutes: ClimbingRoute[] = [];
+    const bookmarkedRoutes: Route[] = [];
 
     if (profile.myRouteIds) {
       await Promise.all(
         profile.myRouteIds.map(async routeId => {
           const route = await routeService.getRouteById(routeId);
-          bookmarkedRoutes.push(route);
+          if (route) {
+            bookmarkedRoutes.push(route);
+          } else {
+            logger.error({ error: 'Route not found', routeId: routeId });
+          }
         }),
       );
     }

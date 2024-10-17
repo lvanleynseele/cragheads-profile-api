@@ -5,6 +5,8 @@ export interface Climb {
   _id: ObjectId;
   userId: ObjectId;
   areaId: ObjectId;
+  gymDataId?: ObjectId;
+  outdoorDataId?: ObjectId;
   startTime: string;
   endTime: string;
   date: Date;
@@ -24,6 +26,16 @@ export const ClimbSchema = new Schema<Climb>(
       ref: 'Area',
       index: true,
       required: true,
+    },
+    gymDataId: {
+      type: Schema.Types.ObjectId,
+      ref: 'GymClimbData',
+      required: false,
+    },
+    outdoorDataId: {
+      type: Schema.Types.ObjectId,
+      ref: 'OutdoorClimbData',
+      required: false,
     },
     startTime: {
       type: String,
