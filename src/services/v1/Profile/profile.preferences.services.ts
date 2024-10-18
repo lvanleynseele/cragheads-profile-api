@@ -1,17 +1,16 @@
+import { ObjectId } from 'mongoose';
 import Preferences, {
   BoulderingScales,
   ClimbingScales,
   Preference,
   Units,
 } from '../../../Models/Profile/Preferences';
-import { collections } from '../../utility/database.service';
-import { ObjectId } from 'mongodb';
 
 const findByProfileId = async (profileId: string | ObjectId) => {
   try {
-    const response = (await Preferences.findOne({
-      profileId: new ObjectId(profileId),
-    })) as unknown as Preference;
+    const response = await Preferences.findOne({
+      profileId,
+    });
     return response;
   } catch (error) {
     throw error;
@@ -33,7 +32,7 @@ const update = async (
 ) => {
   try {
     const response = await Preferences.updateOne(
-      { profileId: new ObjectId(profileId) },
+      { profileId },
       { $set: preferences },
     );
 
@@ -45,14 +44,12 @@ const update = async (
 
 const addDefaultPreferences = async (profileId: string | ObjectId) => {
   try {
-    const preferences: Preference = {
-      profileId: new ObjectId(profileId),
-      Units: Units.Imperial,
-      ClimbingScale: ClimbingScales.Yosemite,
+    const response = await Preferences.create({
+      profileId,
+      ClimbingScale: ClimbingScales.French,
       BoulderScale: BoulderingScales.Hueco,
-    };
-
-    const response = await Preferences.collection.insertOne(preferences);
+      Units: Units.Metric,
+    });
 
     return response;
   } catch (error) {

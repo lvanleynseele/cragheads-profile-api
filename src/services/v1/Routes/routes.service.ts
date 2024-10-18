@@ -1,9 +1,9 @@
-import { ObjectId } from 'mongodb';
 import { collections } from '../../utility/database.service';
 import areaService from '../Area/area.service';
 import Routes, { Route } from '../../../Models/Routes/Route';
 import e from 'cors';
 import logger from '../../../utils/logger';
+import { ObjectId } from 'mongoose';
 
 const getRouteById = async (id: string | ObjectId) => {
   return await Routes.findById(id);
@@ -11,6 +11,10 @@ const getRouteById = async (id: string | ObjectId) => {
 
 const getRoutesByArea = async (areaId: string | ObjectId) => {
   const area = await areaService.findById(areaId);
+
+  if (!area) {
+    throw new Error('Area not found');
+  }
 
   const routes: Route[] = [];
   if (area.routeIds) {

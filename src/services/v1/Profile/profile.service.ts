@@ -1,16 +1,12 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId } from 'mongoose';
 import Profiles, { Profile } from '../../../Models/Profile/Profile';
 import preferencesService from './profile.preferences.services';
 
-const findProfileById = async (
+const findById = async (
   profileId: string | ObjectId,
 ): Promise<Profile | null> => {
   try {
-    const profile = (await Profiles.findById(
-      new ObjectId(profileId),
-    )) as unknown as Profile;
-
-    return profile;
+    return await Profiles.findById(profileId);
   } catch (error) {
     throw error;
   }
@@ -18,14 +14,7 @@ const findProfileById = async (
 
 const findAllProfiles = async () => {
   try {
-    const profiles = await Profiles.find({});
-    Profiles.updateOne(
-      { _id: new ObjectId('6695974b199db0e05f2f9375') },
-      {
-        $pull: { myClimbIds: new ObjectId('670f112f4bb009a80c8bab28') } as any,
-      },
-    );
-    return profiles;
+    return await Profiles.find({});
   } catch (error) {
     throw error;
   }
@@ -34,8 +23,8 @@ const findAllProfiles = async () => {
 const add = async (profile: Profile) => {
   try {
     await Profiles.validate(profile);
-    const response = await Profiles.collection.insertOne(profile);
-    await preferencesService.addDefaultPreferences(response.insertedId);
+    const response = await Profiles.create(profile);
+    await preferencesService.addDefaultPreferences(response._id);
     return response;
   } catch (error) {
     throw error;
@@ -47,7 +36,7 @@ const update = async (profileId: string | ObjectId, profile: Profile) => {
     await Profiles.validate(profile);
 
     const response = await Profiles.updateOne(
-      { _id: new ObjectId(profileId) },
+      { _id: profileId },
       { $set: profile },
     );
 
@@ -57,107 +46,11 @@ const update = async (profileId: string | ObjectId, profile: Profile) => {
   }
 };
 
-const remove = async (profileId: string | ObjectId) => {
+const remove = async (_id: string | ObjectId) => {
   try {
     const response = await Profiles.deleteOne({
-      _id: new ObjectId(profileId),
+      _id,
     });
-
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const addClimb = async (
-  profileId: string | ObjectId,
-  climbId: string | ObjectId,
-) => {
-  try {
-    const response = await Profiles.updateOne(
-      { _id: new ObjectId(profileId) },
-      { $addToSet: { myClimbIds: new ObjectId(climbId) } },
-    );
-
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const removeClimb = async (
-  profileId: string | ObjectId,
-  climbId: string | ObjectId,
-) => {
-  try {
-    const response = await Profiles.updateOne(
-      { _id: new ObjectId(profileId) },
-      { $pull: { myClimbIds: new ObjectId(climbId) } as any },
-    );
-
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const addGymClimb = async (
-  profileId: string | ObjectId,
-  climbId: string | ObjectId,
-) => {
-  try {
-    const response = await Profiles.updateOne(
-      { _id: new ObjectId(profileId) },
-      { $addToSet: { myGymClimbIds: new ObjectId(climbId) } },
-    );
-
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const removeGymClimb = async (
-  profileId: string | ObjectId,
-  climbId: string | ObjectId,
-) => {
-  try {
-    const response = await Profiles.updateOne(
-      { _id: new ObjectId(profileId) },
-      { $pull: { myGymClimbIds: new ObjectId(climbId) } as any },
-    );
-
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const addPost = async (
-  profileId: string | ObjectId,
-  postId: string | ObjectId,
-) => {
-  try {
-    const response = await Profiles.updateOne(
-      { _id: new ObjectId(profileId) },
-      { $addToSet: { postIds: new ObjectId(postId) } },
-    );
-
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const removePost = async (
-  profileId: string | ObjectId,
-  postId: string | ObjectId,
-) => {
-  try {
-    const response = await Profiles.updateOne(
-      { _id: new ObjectId(profileId) },
-      { $pull: { postIds: new ObjectId(postId) } as any },
-    );
 
     return response;
   } catch (error) {
@@ -178,7 +71,7 @@ const search = async (query: string) => {
 
 const addProfilePhoto = async (profileId: string | ObjectId, key: string) => {
   const response = await Profiles.updateOne(
-    { _id: new ObjectId(profileId) },
+    { _id: profileId },
     { $set: { photo: key } },
   );
 
@@ -186,7 +79,7 @@ const addProfilePhoto = async (profileId: string | ObjectId, key: string) => {
 };
 
 const getProfilePicById = async (profileId: string | ObjectId) => {
-  const profile = await findProfileById(profileId);
+  const profile = await findById(profileId);
   if (profile) {
     return profile.photo;
   }
@@ -212,17 +105,11 @@ const checkUsernameTaken = async (userName: string) => {
 };
 
 const profileService = {
-  findProfileById,
+  findById,
   findAllProfiles,
   add,
   update,
   remove,
-  addClimb,
-  removeClimb,
-  addGymClimb,
-  removeGymClimb,
-  addPost,
-  removePost,
   search,
   addProfilePhoto,
   getProfilePicById,

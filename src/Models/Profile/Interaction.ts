@@ -1,13 +1,7 @@
 //unused as of now
 
 import mongoose, { ObjectId, Schema } from 'mongoose';
-
-// interface FriendShip {
-//   interactionsIds: ObjectId[];
-//   friendIds: ObjectId[];
-//   creactedAt: Date;
-//   createdBy: ObjectId;
-// }
+import { ContentType, InteractionType } from '../../constants/enums';
 
 export interface Interaction {
   _id: ObjectId;
@@ -17,22 +11,6 @@ export interface Interaction {
   type: InteractionType;
   contentID: ObjectId; //postId, commentId, messageId, etc.
   contentType: ContentType;
-}
-
-enum InteractionType {
-  LIKE = 'LIKE',
-  COMMENT = 'COMMENT',
-  SHARE = 'SHARE',
-  POST = 'POST',
-  MESSAGE = 'MESSAGE',
-}
-
-enum ContentType {
-  POST = 'POST',
-  FORUM_POST = 'FORUM_POST',
-  CLIMB = 'CLIMB',
-  COMMENT = 'COMMENT',
-  MESSAGE = 'MESSAGE',
 }
 
 const InteractionSchema = new Schema<Interaction>({
@@ -48,5 +26,7 @@ const Interactions = mongoose.model<Interaction>(
   'Interactions',
   InteractionSchema,
 );
+
+Interactions.ensureIndexes();
 
 export default Interactions;

@@ -1,5 +1,4 @@
-import { ObjectId } from 'mongodb';
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { ObjectId, Schema } from 'mongoose';
 
 export interface Preference {
   profileId: ObjectId;
@@ -53,5 +52,7 @@ const Preferences = mongoose.model<Preference>(
   'Preferences',
   preferencesSchema,
 );
+
+Preferences.ensureIndexes();
 
 export default Preferences;

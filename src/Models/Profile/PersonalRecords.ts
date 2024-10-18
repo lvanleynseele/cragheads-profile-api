@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongoose';
+import mongoose, { ObjectId, Schema } from 'mongoose';
 import { ClimbingTypes } from '../../constants/enums';
 
 export interface PersonalRecords {
@@ -15,3 +15,57 @@ export interface PersonalRecords {
   VMaxRecentDate: Date;
   VMaxRecentClimbId: ObjectId;
 }
+
+const PersonalRecordsSchema = new Schema<PersonalRecords>({
+  userId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    index: true,
+  },
+  type: {
+    type: String,
+    required: true,
+    enum: Object.values(ClimbingTypes),
+  },
+  VMax: {
+    type: Number,
+    required: true,
+  },
+  VMaxRouteId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
+  VMaxDate: {
+    type: Date,
+    required: true,
+  },
+  VMaxClimbId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
+  VMaxRecent: {
+    type: Number,
+    required: true,
+  },
+  VMaxRecentRouteId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
+  VMaxRecentDate: {
+    type: Date,
+    required: true,
+  },
+  VMaxRecentClimbId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
+});
+
+const PersonalRecords = mongoose.model<PersonalRecords>(
+  'PersonalRecords',
+  PersonalRecordsSchema,
+);
+
+PersonalRecords.ensureIndexes();
+
+export default PersonalRecords;

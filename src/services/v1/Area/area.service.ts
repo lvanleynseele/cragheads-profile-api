@@ -1,12 +1,9 @@
-import { ObjectId } from 'mongodb';
 import { collections } from '../../utility/database.service';
 import Areas, { ClimbingArea } from '../../../Models/Area/Area';
+import { ObjectId } from 'mongoose';
 
-const findById = async (id: string | ObjectId) => {
-  const area = (await collections.areas.findOne({
-    _id: new ObjectId(id),
-  })) as unknown as ClimbingArea;
-  return area;
+const findById = async (_id: string | ObjectId) => {
+  return await Areas.findById(_id);
 };
 
 const getByLocation = async (lat: string, long: string, radius: string) => {

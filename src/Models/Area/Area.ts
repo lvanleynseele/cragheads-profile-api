@@ -1,9 +1,8 @@
-import { ObjectId } from 'mongodb';
 import {
   ClimbingAreaFacilities,
   ClimbingAreaTags,
 } from '../../constants/enums';
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { ObjectId, Schema } from 'mongoose';
 import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 export interface ClimbingArea {

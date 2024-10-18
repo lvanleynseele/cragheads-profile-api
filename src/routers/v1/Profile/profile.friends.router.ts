@@ -1,6 +1,6 @@
 import express from 'express';
 import { collections } from '../../../services/utility/database.service';
-import { ObjectId } from 'mongodb';
+
 import { Profile } from '../../../Models/Profile/Profile';
 import friendsService from '../../../services/v1/Profile/profile.friends.service';
 

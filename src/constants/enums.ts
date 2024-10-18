@@ -53,3 +53,20 @@ export enum GymHoldTypes {
   FEATURE = 'FEATURE',
   OTHER = 'OTHER',
 }
+
+export enum InteractionType {
+  LIKE = 'LIKE',
+  COMMENT = 'COMMENT',
+  SHARE = 'SHARE',
+  POST = 'POST',
+  MESSAGE = 'MESSAGE',
+}
+
+export enum ContentType {
+  POST = 'POST',
+  PROJECT = 'PROJECT',
+  FORUM_POST = 'FORUM_POST',
+  CLIMB = 'CLIMB',
+  COMMENT = 'COMMENT',
+  MESSAGE = 'MESSAGE',
+}

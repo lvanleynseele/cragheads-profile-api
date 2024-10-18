@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId } from 'mongoose';
 
 export interface RouteBeta {
   _id: ObjectId;

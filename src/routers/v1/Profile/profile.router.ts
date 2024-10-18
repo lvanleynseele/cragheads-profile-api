@@ -17,7 +17,7 @@ profileRouter.use('/preferences', preferencesRouter);
 profileRouter.get('/by-id/:id', async (req, res) => {
   try {
     const profileId = req.params.id;
-    const profile = await profileService.findProfileById(profileId);
+    const profile = await profileService.findById(profileId);
 
     res.status(200).send(profile);
   } catch (error) {

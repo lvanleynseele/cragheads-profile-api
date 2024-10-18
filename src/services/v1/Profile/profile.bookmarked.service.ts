@@ -1,14 +1,14 @@
-import { ObjectId } from 'mongodb';
-import { collections } from '../../utility/database.service';
 import { ClimbingArea } from '../../../Models/Area/Area';
 import areaService from '../Area/area.service';
 import routeService from '../Routes/routes.service';
 import profileService from './profile.service';
 import { Route } from '../../../Models/Routes/Route';
 import logger from '../../../utils/logger';
+import { ObjectId } from 'mongoose';
+import Profiles from '../../../Models/Profile/Profile';
 
 const getAreasByProfile = async (profileId: string | ObjectId) => {
-  const profile = await profileService.findProfileById(profileId);
+  const profile = await profileService.findById(profileId.toString());
 
   if (profile && profile.myAreaIds) {
     const bookmarkedAreas: ClimbingArea[] = [];
@@ -17,7 +17,11 @@ const getAreasByProfile = async (profileId: string | ObjectId) => {
       await Promise.all(
         profile.myAreaIds.map(async areaId => {
           const area = await areaService.findById(areaId);
-          bookmarkedAreas.push(area);
+          if (area) {
+            bookmarkedAreas.push(area);
+          } else {
+            logger.error({ error: 'Area not found', areaId: areaId });
+          }
         }),
       );
     }
@@ -26,7 +30,7 @@ const getAreasByProfile = async (profileId: string | ObjectId) => {
 };
 
 const getRoutesByProfile = async (profileId: string | ObjectId) => {
-  const profile = await profileService.findProfileById(profileId);
+  const profile = await profileService.findById(profileId.toString());
 
   if (profile && profile.myRouteIds) {
     const bookmarkedRoutes: Route[] = [];
@@ -52,9 +56,9 @@ const addBookmarkedArea = async (
   profileId: string | ObjectId,
   areaId: string | ObjectId,
 ) => {
-  const result = await collections.profiles.updateOne(
-    { _id: new ObjectId(profileId) },
-    { $addToSet: { myAreaIds: new ObjectId(areaId) } },
+  const result = await Profiles.updateOne(
+    { _id: profileId },
+    { $addToSet: { myAreaIds: areaId } },
   );
 
   return result;
@@ -64,9 +68,9 @@ const addBookmarkedRoute = async (
   profileId: string | ObjectId,
   routeId: string | ObjectId,
 ) => {
-  const result = await collections.profiles.updateOne(
-    { _id: new ObjectId(profileId) },
-    { $addToSet: { myRouteIds: new ObjectId(routeId) } },
+  const result = await Profiles.updateOne(
+    { _id: profileId },
+    { $addToSet: { myRouteIds: routeId } },
   );
 
   return result;
@@ -76,9 +80,9 @@ const removeBookmarkedArea = async (
   profileId: string | ObjectId,
   areaId: string | ObjectId,
 ) => {
-  const result = await collections.profiles.updateOne(
-    { _id: new ObjectId(profileId) },
-    { $pull: { myAreaIds: new ObjectId(areaId) } as any },
+  const result = await Profiles.updateOne(
+    { _id: profileId },
+    { $pull: { myAreaIds: areaId } as any },
   );
 
   return result;
@@ -88,9 +92,9 @@ const removeBookmarkedRoute = async (
   profileId: string | ObjectId,
   routeId: string | ObjectId,
 ) => {
-  const result = await collections.profiles.updateOne(
-    { _id: new ObjectId(profileId) },
-    { $pull: { myRouteIds: new ObjectId(routeId) } as any },
+  const result = await Profiles.updateOne(
+    { _id: profileId },
+    { $pull: { myRouteIds: routeId } as any },
   );
 
   return result;

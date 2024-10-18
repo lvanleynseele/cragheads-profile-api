@@ -1,19 +1,17 @@
-import { ObjectId } from 'mongodb';
 import Profiles, { Profile } from '../../../Models/Profile/Profile';
-import { collections } from '../../utility/database.service';
 import profileService from './profile.service';
 import FriendRequests from '../../../Models/Profile/FriendRequest';
-import { profile } from 'console';
+import { ObjectId } from 'mongoose';
 
 const getByProfile = async (profileId: string | ObjectId) => {
   try {
-    const profile = await profileService.findProfileById(profileId);
+    const profile = await profileService.findById(profileId);
     const friends: Profile[] = [];
     if (profile !== null) {
       if (profile.friendIds) {
         await Promise.all(
           profile.friendIds.map(async friendId => {
-            const friend = await profileService.findProfileById(friendId);
+            const friend = await profileService.findById(friendId);
             if (friend) friends.push(friend);
           }),
         );
@@ -32,13 +30,13 @@ const addFriend = async (
   friendId: string | ObjectId,
 ) => {
   Profiles.updateOne(
-    { _id: new ObjectId(profileId) },
-    { $addToSet: { friendIds: new ObjectId(friendId) } },
+    { _id: profileId },
+    { $addToSet: { friendIds: friendId } },
   );
 
   await Profiles.updateOne(
-    { _id: new ObjectId(friendId) },
-    { $addToSet: { friendIds: new ObjectId(profileId) } },
+    { _id: friendId },
+    { $addToSet: { friendIds: profileId } },
   );
 };
 
@@ -47,13 +45,13 @@ const removeFriend = async (
   friendId: string | ObjectId,
 ) => {
   await Profiles.updateOne(
-    { _id: new ObjectId(profileId) },
-    { $pull: { friendIds: new ObjectId(friendId) } as any },
+    { _id: profileId },
+    { $pull: { friendIds: friendId } as any },
   );
 
   await Profiles.updateOne(
-    { _id: new ObjectId(friendId) },
-    { $pull: { friendIds: new ObjectId(profileId) } as any },
+    { _id: friendId },
+    { $pull: { friendIds: profileId } as any },
   );
 };
 
@@ -62,8 +60,8 @@ const isFriend = async (
   friendId: string | ObjectId,
 ) => {
   const profile = await Profiles.findOne({
-    _id: new ObjectId(profileId),
-    friendIds: new ObjectId(friendId),
+    _id: profileId,
+    friendIds: friendId,
   });
 
   return profile !== null;
@@ -85,22 +83,20 @@ const sendFriendRequest = async (
     throw new Error('Already friends');
   }
 
-  return await FriendRequests.collection.insertOne({
-    senderId: new ObjectId(profileId),
-    receiverId: new ObjectId(friendId),
+  return await FriendRequests.create({
+    senderId: profileId,
+    receiverId: friendId,
     status: 'PENDING',
     date: new Date(),
   });
 };
 
 const acceptFriendRequest = async (requestId: string | ObjectId) => {
-  const request = await FriendRequests.findOne({
-    _id: new ObjectId(requestId),
-  });
+  const request = await FriendRequests.findById(requestId);
 
   if (request) {
     await FriendRequests.updateOne(
-      { _id: new ObjectId(requestId) },
+      { _id: requestId },
       { $set: { status: 'ACCEPTED' } },
     );
 
@@ -110,12 +106,12 @@ const acceptFriendRequest = async (requestId: string | ObjectId) => {
 
 const rejectFriendRequest = async (requestId: string | ObjectId) => {
   const request = await FriendRequests.findOne({
-    _id: new ObjectId(requestId),
+    _id: requestId,
   });
 
   if (request) {
     await FriendRequests.updateOne(
-      { _id: new ObjectId(requestId) },
+      { _id: requestId },
       { $set: { status: 'REJECTED' } },
     );
   }
@@ -123,7 +119,7 @@ const rejectFriendRequest = async (requestId: string | ObjectId) => {
 
 const findFriendRequestByProfile = async (profileId: string | ObjectId) => {
   const requests = await FriendRequests.find({
-    receiverId: new ObjectId(profileId),
+    receiverId: profileId,
     status: 'PENDING',
   });
 
