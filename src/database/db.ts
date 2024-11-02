@@ -18,12 +18,4 @@ export const connect = async () => {
   }
 };
 
-async function indexSchemas() {
-  try {
-    const Profile = mongoose.model('Profile', ProfileSchema);
-    Profile.createIndexes();
-  } catch (error) {
-    logger.error('Error indexing schemas', error);
-  }
-}
 //https://medium.com/@Bigscal-Technologies/how-to-set-up-node-js-with-mongodb-using-docker-49b5fb849bc7
