@@ -9,6 +9,10 @@ mainRouter.use((req, res, next) => {
   next();
 });
 
+mainRouter.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 mainRouter.use('/profile', profileRouter);
 
 export default mainRouter;
