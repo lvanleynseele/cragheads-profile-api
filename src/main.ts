@@ -8,6 +8,7 @@ import { connect } from './database/db';
 import keycloack from './utils/keycloack';
 
 const port = process.env.PORT || 3015;
+const cors = require('cors');
 
 (async () => {
   try {
@@ -24,6 +25,7 @@ const port = process.env.PORT || 3015;
 
     app.use(keycloack.middleware());
     app.use('/v1', mainRouter);
+    app.use(cors);
 
     // registerSchedulers();
   } catch (error) {

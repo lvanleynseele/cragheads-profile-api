@@ -11,6 +11,7 @@ export interface Profile {
   dateOfBirth: Date;
   role: Roles;
   photo?: string;
+  caption?: string;
   friendIds: ObjectId[];
   //bookmarked areas and climbs
   myRouteIds: ObjectId[];
@@ -60,6 +61,12 @@ export const ProfileSchema = new Schema<Profile>(
       type: String,
       required: false,
       default: '',
+    },
+    caption: {
+      type: String,
+      required: false,
+      default: '',
+      maxlength: 300,
     },
     friendIds: {
       type: [Schema.Types.ObjectId],
